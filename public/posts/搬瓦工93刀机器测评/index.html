@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Language" content="en">
+    <meta name="color-scheme" content="light dark">
+
+    
+
+    <meta name="author" content="James">
+    <meta name="description" content="一、搬瓦工介绍    搬瓦工（BandwagonHost）是一家提供VPS（虚拟专用服务器）和云服务器服务的服务提供商。他们提供各种不同配置的虚拟服务器，适用于个人用户、开发者和企业。搬瓦工以其价格相对亲民和简便易用而受到一些用户的欢迎。
+该公司总部位于美国，但他们的服务器分布在全球不同的数据中心，包括北美、欧洲和亚洲等地。搬瓦工提供了多种操作系统选择，如Linux和Windows，以及一些常用的应用程序和工具。
+其推出的GIA线路深受广大用户喜爱，对大陆友好，适合建站和自用。
+今天测评的一款就是在46刀传家宝高溢价的情况下推出的一款性价比极高的机器，其推出后原46刀传家宝瞬间溢价打骨折，可见其CP值之高，今天就让我们看一下此机器具体的情况。
+套餐介绍    搬瓦工 CN2 GIA-E 40G 限量版套餐，价格是 $99.9 美元/年，只能年付，不支持月付或者季付，使用优惠码之后价格是 93.1 美元。购买后可以在 14 个机房任意切换。
+搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+值得一提的是没有香港机房可选，可选机房如下：
+US: Los Angeles, California (DC6 CT CN2GIA-E) [USCA_6] US: Los Angeles, California (DC9 CT CN2GIA) [USCA_9] US: Los Angeles, California (DC3 CN2) [USCA_3] US: Los Angeles, California (DC8 ZNET) [USCA_8] US: Los Angeles, California (DC2 AO) [USCA_2] US: Los Angeles, California (DC4 MCOM) [USCA_4] US: Fremont, California [USCA_FMT] US: New Jersey [USNJ] US: New York [USNY_2] CA: British Columbia, Vancouver [CABC_1] CA: British Columbia, Vancouver (CN2GIA) [CABC_6] EU: Amsterdam, Netherlands [EUNL_3] EU: Amsterdam, Netherlands (China Unicom Premium) [EUNL_9] Japan: Osaka (Softbank) [JPOS_1] 有广大用户喜爱的DC6和DC9以及日本软银。">
+    <meta name="keywords" content="blog,security research,vps">
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="搬瓦工93刀机器测评"/>
+<meta name="twitter:description" content="一、搬瓦工介绍    搬瓦工（BandwagonHost）是一家提供VPS（虚拟专用服务器）和云服务器服务的服务提供商。他们提供各种不同配置的虚拟服务器，适用于个人用户、开发者和企业。搬瓦工以其价格相对亲民和简便易用而受到一些用户的欢迎。
+该公司总部位于美国，但他们的服务器分布在全球不同的数据中心，包括北美、欧洲和亚洲等地。搬瓦工提供了多种操作系统选择，如Linux和Windows，以及一些常用的应用程序和工具。
+其推出的GIA线路深受广大用户喜爱，对大陆友好，适合建站和自用。
+今天测评的一款就是在46刀传家宝高溢价的情况下推出的一款性价比极高的机器，其推出后原46刀传家宝瞬间溢价打骨折，可见其CP值之高，今天就让我们看一下此机器具体的情况。
+套餐介绍    搬瓦工 CN2 GIA-E 40G 限量版套餐，价格是 $99.9 美元/年，只能年付，不支持月付或者季付，使用优惠码之后价格是 93.1 美元。购买后可以在 14 个机房任意切换。
+搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+值得一提的是没有香港机房可选，可选机房如下：
+US: Los Angeles, California (DC6 CT CN2GIA-E) [USCA_6] US: Los Angeles, California (DC9 CT CN2GIA) [USCA_9] US: Los Angeles, California (DC3 CN2) [USCA_3] US: Los Angeles, California (DC8 ZNET) [USCA_8] US: Los Angeles, California (DC2 AO) [USCA_2] US: Los Angeles, California (DC4 MCOM) [USCA_4] US: Fremont, California [USCA_FMT] US: New Jersey [USNJ] US: New York [USNY_2] CA: British Columbia, Vancouver [CABC_1] CA: British Columbia, Vancouver (CN2GIA) [CABC_6] EU: Amsterdam, Netherlands [EUNL_3] EU: Amsterdam, Netherlands (China Unicom Premium) [EUNL_9] Japan: Osaka (Softbank) [JPOS_1] 有广大用户喜爱的DC6和DC9以及日本软银。"/>
+
+    <meta property="og:title" content="搬瓦工93刀机器测评" />
+<meta property="og:description" content="一、搬瓦工介绍    搬瓦工（BandwagonHost）是一家提供VPS（虚拟专用服务器）和云服务器服务的服务提供商。他们提供各种不同配置的虚拟服务器，适用于个人用户、开发者和企业。搬瓦工以其价格相对亲民和简便易用而受到一些用户的欢迎。
+该公司总部位于美国，但他们的服务器分布在全球不同的数据中心，包括北美、欧洲和亚洲等地。搬瓦工提供了多种操作系统选择，如Linux和Windows，以及一些常用的应用程序和工具。
+其推出的GIA线路深受广大用户喜爱，对大陆友好，适合建站和自用。
+今天测评的一款就是在46刀传家宝高溢价的情况下推出的一款性价比极高的机器，其推出后原46刀传家宝瞬间溢价打骨折，可见其CP值之高，今天就让我们看一下此机器具体的情况。
+套餐介绍    搬瓦工 CN2 GIA-E 40G 限量版套餐，价格是 $99.9 美元/年，只能年付，不支持月付或者季付，使用优惠码之后价格是 93.1 美元。购买后可以在 14 个机房任意切换。
+搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+值得一提的是没有香港机房可选，可选机房如下：
+US: Los Angeles, California (DC6 CT CN2GIA-E) [USCA_6] US: Los Angeles, California (DC9 CT CN2GIA) [USCA_9] US: Los Angeles, California (DC3 CN2) [USCA_3] US: Los Angeles, California (DC8 ZNET) [USCA_8] US: Los Angeles, California (DC2 AO) [USCA_2] US: Los Angeles, California (DC4 MCOM) [USCA_4] US: Fremont, California [USCA_FMT] US: New Jersey [USNJ] US: New York [USNY_2] CA: British Columbia, Vancouver [CABC_1] CA: British Columbia, Vancouver (CN2GIA) [CABC_6] EU: Amsterdam, Netherlands [EUNL_3] EU: Amsterdam, Netherlands (China Unicom Premium) [EUNL_9] Japan: Osaka (Softbank) [JPOS_1] 有广大用户喜爱的DC6和DC9以及日本软银。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.123577.xyz/posts/%E6%90%AC%E7%93%A6%E5%B7%A593%E5%88%80%E6%9C%BA%E5%99%A8%E6%B5%8B%E8%AF%84/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-08-27T15:38:53&#43;08:00" />
+<meta property="article:modified_time" content="2023-08-27T15:38:53&#43;08:00" />
+
+
+
+    <title>
+  搬瓦工93刀机器测评 · james&#39; blog
+</title>
+
+    
+      <link rel="canonical" href="https://blog.123577.xyz/posts/%E6%90%AC%E7%93%A6%E5%B7%A593%E5%88%80%E6%9C%BA%E5%99%A8%E6%B5%8B%E8%AF%84/">
+    
+
+    <link rel="preload" href="/fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
+
+    
+      
+      
+      <link rel="stylesheet" href="/css/coder.min.93c41bf1e522f85ecda7355985f09000f71fc1d64dda9f74051b0fa06210e93f.css" integrity="sha256-k8Qb8eUi&#43;F7NpzVZhfCQAPcfwdZN2p90BRsPoGIQ6T8=" crossorigin="anonymous" media="screen" />
+    
+
+    
+
+    
+
+    
+
+    
+
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16">
+
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+    
+
+    <meta name="generator" content="Hugo 0.83.1" />
+  </head>
+
+  
+  
+  <body class="preload-transitions colorscheme-light"
+        onload=""
+  >
+    
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="/">
+      james&#39; blog
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/posts/">Blog</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/about/">About</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link" href="/link/">Friends</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://blog.123577.xyz/posts/%E6%90%AC%E7%93%A6%E5%B7%A593%E5%88%80%E6%9C%BA%E5%99%A8%E6%B5%8B%E8%AF%84/">
+              搬瓦工93刀机器测评
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              <time datetime='2023-08-27T15:38:53&#43;08:00'>
+                August 27, 2023
+              </time>
+            </span>
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              7-minute read
+            </span>
+          </div>
+          
+          
+          
+        </div>
+      </header>
+
+      <div>
+        
+        <h2 id="一搬瓦工介绍">
+  一、搬瓦工介绍
+  <a class="heading-link" href="#%e4%b8%80%e6%90%ac%e7%93%a6%e5%b7%a5%e4%bb%8b%e7%bb%8d">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h2>
+<p>搬瓦工（BandwagonHost）是一家提供VPS（虚拟专用服务器）和云服务器服务的服务提供商。他们提供各种不同配置的虚拟服务器，适用于个人用户、开发者和企业。搬瓦工以其价格相对亲民和简便易用而受到一些用户的欢迎。</p>
+<p>该公司总部位于美国，但他们的服务器分布在全球不同的数据中心，包括北美、欧洲和亚洲等地。搬瓦工提供了多种操作系统选择，如Linux和Windows，以及一些常用的应用程序和工具。</p>
+<p>其推出的GIA线路深受广大用户喜爱，对大陆友好，适合建站和自用。</p>
+<p>今天测评的一款就是在46刀传家宝高溢价的情况下推出的一款性价比极高的机器，其推出后原46刀传家宝瞬间溢价打骨折，可见其CP值之高，今天就让我们看一下此机器具体的情况。</p>
+<h2 id="套餐介绍">
+  套餐介绍
+  <a class="heading-link" href="#%e5%a5%97%e9%a4%90%e4%bb%8b%e7%bb%8d">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h2>
+<p>搬瓦工 CN2 GIA-E 40G 限量版套餐，价格是 $99.9 美元/年，只能年付，不支持月付或者季付，使用优惠码之后价格是 93.1 美元。购买后可以在 14 个机房任意切换。</p>
+<p>搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）</p>
+<p>值得一提的是没有香港机房可选，可选机房如下：</p>
+<pre><code>US: Los Angeles, California (DC6 CT CN2GIA-E) [USCA_6]
+US: Los Angeles, California (DC9 CT CN2GIA) [USCA_9]
+US: Los Angeles, California (DC3 CN2) [USCA_3]
+US: Los Angeles, California (DC8 ZNET) [USCA_8]
+US: Los Angeles, California (DC2 AO) [USCA_2]
+US: Los Angeles, California (DC4 MCOM) [USCA_4]
+US: Fremont, California [USCA_FMT]
+US: New Jersey [USNJ]
+US: New York [USNY_2]
+CA: British Columbia, Vancouver [CABC_1]
+CA: British Columbia, Vancouver (CN2GIA) [CABC_6]
+EU: Amsterdam, Netherlands [EUNL_3]
+EU: Amsterdam, Netherlands (China Unicom Premium) [EUNL_9]
+Japan: Osaka (Softbank) [JPOS_1]
+</code></pre><p>有广大用户喜爱的DC6和DC9以及日本软银。</p>
+<p>配置是2C2G40GB，流量1000G双向</p>
+<h2 id="详细测评">
+  详细测评
+  <a class="heading-link" href="#%e8%af%a6%e7%bb%86%e6%b5%8b%e8%af%84">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h2>
+<p>测试的机房是DC6机房。</p>
+<h3 id="1-cpu跑分">
+  1. CPU跑分
+  <a class="heading-link" href="#1-cpu%e8%b7%91%e5%88%86">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h3>
+<pre><code>Basic System Information:
+---------------------------------
+Uptime     : 47 days, 1 hours, 1 minutes
+Processor  : QEMU Virtual CPU version (cpu64-rhel6)
+CPU cores  : 2 @ 2599.990 MHz
+AES-NI     : ✔ Enabled
+VM-x/AMD-V : ❌ Disabled
+RAM        : 1.9 GiB
+Swap       : 1024.0 MiB
+Disk       : 39.3 GiB
+Distro     : Debian GNU/Linux 12 (bookworm)
+Kernel     : 6.1.0-9-amd64
+VM Type    : KVM
+IPv4/IPv6  : ✔ Online / ❌ Offline
+
+ Network Information:
+---------------------------------
+ISP        : IT7 Networks Inc
+ASN        : AS21887 Fiber Logic Inc.
+Host       : Cluster Logic Inc
+Location   : Los Angeles, California (CA)
+Country    : United States
+
+Geekbench 5 Benchmark Test:
+---------------------------------
+Test            | Value
+                |
+Single Core     | 437
+Multi Core      | 634
+Full Test       | https://browser.geekbench.com/v5/cpu/22004345
+
+YABS completed in 4 min 14 sec
+
+</code></pre><p>总体来说跑分不是很高，可能是因为根据搬瓦工的TOS，CPU单核会限制30%的使用，但这款机器的优势不在于CPU，而在于线路。</p>
+<p>搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+购买直达<a href="https://bwh81.net/aff.php?aff=42451&amp;pid=94" target="_blank">链接</a>
+</p>
+<h3 id="2-ip质量测试">
+  2. IP质量测试
+  <a class="heading-link" href="#2-ip%e8%b4%a8%e9%87%8f%e6%b5%8b%e8%af%95">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h3>
+<pre><code>IPV4 ASN : AS21887 Fiber Logic Inc.
+IPV4 位置: Los Angeles / California / US
+欺诈分数(越低越好): 0②
+abuse得分(越低越好): 0④
+IP类型:
+  使用类型(usage_type):hosting①  Data Center/Web Hosting/Transit⑤  hosting⑧  business⑨
+  公司类型(company_type):hosting①  business⑧
+  云服务提供商(cloud_provider):  Yes⑧
+  数据中心(datacenter):  No⑥ ⑨
+  移动网络(mobile):  No⑥
+  代理(proxy):  No① ②   Yes⑥ ⑦ ⑧ ⑨ ⑩
+  VPN(vpn):  No① ② ⑦   Yes⑧
+  TOR(tor):  No① ② ⑦ ⑧ ⑨
+  TOR出口(tor_exit):  No⑧
+  搜索引擎机器人(search_engine_robot):②
+  匿名代理(anonymous):  Yes⑦ ⑧   No⑨
+  攻击方(attacker):  No⑧ ⑨
+  滥用者(abuser):  No⑧ ⑨
+  威胁(threat):  No⑧ ⑨
+  iCloud中继(icloud_relay):  No① ⑧ ⑨
+  未分配IP(bogon):  No⑧ ⑨
+Google搜索可行性：YES
+端口25检测:
+  本地: No
+  163邮箱: Yes
+  gmail邮箱: Yes
+  outlook邮箱: Yes
+  yandex邮箱: Yes
+  qq邮箱: Yes
+Cloudflare威胁得分高于10为爬虫或垃圾邮件发送者,高于40有严重不良行为(如僵尸网络等),数值一般不会大于60
+Cloudflare威胁得分：1
+------------------------------------------------------------------------
+ 总共花费        : 23 秒
+ 时间          : 2023-12-01 08:48:42
+------------------------------------------------------------------------
+</code></pre><p>可以看出IP还是比较干净的。</p>
+<p>搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+购买直达<a href="https://bwh81.net/aff.php?aff=42451&amp;pid=94" target="_blank">链接</a>
+</p>
+<h3 id="3-流媒体测试">
+  3. 流媒体测试
+  <a class="heading-link" href="#3-%e6%b5%81%e5%aa%92%e4%bd%93%e6%b5%8b%e8%af%95">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h3>
+<pre><code>============[ Multination ]============
+ Dazn:					Yes (Region: US)
+ HotStar:				No
+ Disney+:				No
+ Netflix:				Originals Only
+ YouTube Premium:			Yes
+ Amazon Prime Video:			Yes (Region: US)
+ TVBAnywhere+:				Yes
+ iQyi Oversea Region:			US
+ Viu.com:				No
+ YouTube CDN:				Los Angeles, CA
+ Netflix Preferred CDN:			Los Angeles, CA
+ Spotify Registration:			No
+ Steam Currency:			USD
+ ChatGPT:				Yes
+ Bing Region:				US
+=======================================
+</code></pre><p>解锁奈飞自制剧和ChatGPT，总体来说够用了。</p>
+<p>搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+购买直达<a href="https://bandwagonhost.com/aff.php?aff=42451" target="_blank">链接</a>
+</p>
+<h3 id="4-网速测试">
+  4. 网速测试
+  <a class="heading-link" href="#4-%e7%bd%91%e9%80%9f%e6%b5%8b%e8%af%95">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h3>
+<pre><code>   Speedtest by Ookla
+
+      Server: Wiline Networks - Los Angeles, CA (id: 17249)
+         ISP: IT7 Networks Inc
+Idle Latency:     0.60 ms   (jitter: 0.58ms, low: 0.43ms, high: 2.65ms)
+    Download:  2633.68 Mbps (data used: 3.4 GB)
+                  9.13 ms   (jitter: 4.55ms, low: 1.49ms, high: 24.59ms)
+      Upload:  5291.55 Mbps (data used: 8.0 GB)
+                  3.49 ms   (jitter: 3.15ms, low: 0.78ms, high: 22.08ms)
+ Packet Loss: Not available.
+</code></pre><p>下载跑到了2.6G，上传跑到了5G，总体来说还是非常快的。</p>
+<p>搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+购买直达<a href="https://bwh81.net/aff.php?aff=42451&amp;pid=94" target="_blank">链接</a>
+</p>
+<h3 id="4-回程测试">
+  4. 回程测试
+  <a class="heading-link" href="#4-%e5%9b%9e%e7%a8%8b%e6%b5%8b%e8%af%95">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h3>
+<p>测试国内四网的回连情况。</p>
+<pre><code>『北京 电信 163 AS4134 』
+traceroute to ipv4.pek-4134.endpoint.nxtrace.org., 30 hops max, 52 byte packets
+1   172.22.61.200   *                         RFC1918
+                                              12.93 ms / 22.59 ms / 18.90 ms
+2   218.30.49.177   AS4134   [CHINANET-US]    美国 加利福尼亚州 洛杉矶  chinatelecom.com.cn  电信
+                                              1.05 ms / 3.64 ms / 0.84 ms
+3   59.43.184.153   *        [CN2-BackBone]   中国 上海市  X-I chinatelecom.cn  电信
+                                              128.03 ms / * ms / * ms
+4   59.43.39.153    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              136.53 ms / 125.87 ms / 125.74 ms
+5   59.43.22.5      *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              135.33 ms / 136.07 ms / 134.73 ms
+6   59.43.46.81     *        [CN2-BackBone]   中国 北京市   chinatelecom.cn  电信
+                                              150.42 ms / 151.54 ms / 149.80 ms
+7   *
+8   *
+9   36.110.6.153    AS4847                    中国 北京市  西城区 chinatelecom.cn  电信
+                                              150.73 ms / 150.54 ms / 150.46 ms
+
+『北京 联通 169 AS4837 』
+traceroute to ipv4.pek-4837.endpoint.nxtrace.org., 30 hops max, 52 byte packets
+1   172.22.61.200   *                         RFC1918
+                                              106.23 ms / 16.08 ms / 14.99 ms
+2   *
+3   218.30.48.133   AS4134   [CHINANET-US]    中国 北京市   chinatelecom.com.cn  电信
+                                              0.78 ms / 0.84 ms / 0.77 ms
+4   59.43.246.237   *        [CN2-Global]     中国 上海市   chinatelecom.cn  电信
+                                              131.87 ms / 132.01 ms / 136.72 ms
+5   59.43.39.181    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              134.87 ms / 135.12 ms / 135.42 ms
+6   59.43.159.97    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              132.89 ms / 132.75 ms / 136.54 ms
+7   59.43.80.145    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              136.06 ms / * ms / * ms
+8   202.97.97.217   AS4134   [CHINANET-BB]    中国 北京市   chinatelecom.com.cn  电信
+                                              160.77 ms / 157.72 ms / * ms
+9   202.97.88.206   AS4134   [CHINANET-BB]    中国 北京市   chinatelecom.com.cn  电信
+                                              258.87 ms / 259.52 ms / * ms
+10  219.158.44.129  AS4837   [CU169-BACKBONE] 中国 北京市   chinaunicom.cn  联通
+                                              163.92 ms / 262.88 ms / * ms
+11  *
+12  *
+13  61.51.169.142   AS4808                    中国 北京市   chinaunicom.cn  联通
+                                              160.12 ms / 159.66 ms / 159.77 ms
+14  *
+15  *
+16  *
+17  123.125.96.156  AS4808   [UNICOM-BJ]      中国 北京市   chinaunicom.cn  联通
+                                              159.16 ms / 159.90 ms / 159.32 ms
+
+『北京 移动 骨干网 AS9808 』
+traceroute to ipv4.pek-9808.endpoint.nxtrace.org., 30 hops max, 52 byte packets
+1   172.22.61.200   *                         RFC1918
+                                              16.60 ms / 14.93 ms / 17.92 ms
+2   *
+3   218.30.48.133   AS4134   [CHINANET-US]    中国 北京市   chinatelecom.com.cn  电信
+                                              1.04 ms / 7.59 ms / 1.07 ms
+4   59.43.189.37    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              129.06 ms / 129.09 ms / 130.69 ms
+5   59.43.39.177    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              127.06 ms / 127.08 ms / 126.69 ms
+6   59.43.22.17     *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              133.43 ms / 130.17 ms / * ms
+7   59.43.80.145    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              332.42 ms / * ms / * ms
+8   *
+9   202.97.74.166   AS4134   [CHINANET-BB]    中国 北京市   chinatelecom.com.cn  电信
+                                              154.03 ms / 158.88 ms / 154.76 ms
+10  221.183.128.137 AS9808   [CMNET]          中国 北京市   chinamobile.com  移动
+                                              259.38 ms / 259.52 ms / * ms
+11  *
+12  *
+13  211.136.66.229  AS56048  [CMNET]          中国 北京市   chinamobile.com  移动
+                                              261.87 ms / 261.84 ms / * ms
+14  221.179.171.1   AS56048  [CMNET]          中国 北京市   chinamobile.com  移动
+                                              174.54 ms / 174.23 ms / 174.37 ms
+15  211.136.67.166  AS56048  [CMNET]          中国 北京市   chinamobile.com  移动
+                                              263.22 ms / 260.99 ms / 261.18 ms
+16  211.136.95.226  AS56048  [CMNET]          中国 北京市   chinamobile.com  移动
+                                              174.20 ms / 173.55 ms / 175.40 ms
+17  *
+18  *
+19  211.136.25.153  AS56048  [CMNET]          中国 北京市   chinamobile.com  移动
+                                              175.42 ms / 175.37 ms / 175.51 ms
+
+『北京 教育网 CERNET AS4538 』
+traceroute to ipv4.pek-4538.endpoint.nxtrace.org., 30 hops max, 52 byte packets
+1   172.22.61.200   *                         RFC1918
+                                              22.11 ms / 20.91 ms / 19.83 ms
+2   218.30.49.141   AS4134   [CHINANET-US]    美国 加利福尼亚州 洛杉矶  chinatelecom.com.cn  电信
+                                              1.64 ms / 1.23 ms / 1.03 ms
+3   59.43.184.157   *        [CN2-BackBone]   中国 上海市  X-I chinatelecom.cn  电信
+                                              128.26 ms / 128.18 ms / 128.34 ms
+4   *
+5   59.43.138.65    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              129.80 ms / 230.23 ms / * ms
+6   59.43.80.145    *        [CN2-BackBone]   中国 上海市   chinatelecom.cn  电信
+                                              230.77 ms / * ms / * ms
+7   202.97.44.165   AS4134   [CHINANET-BB]    中国 北京市   chinatelecom.com.cn  电信
+                                              151.87 ms / * ms / * ms
+8   202.97.17.62    AS4134   [CHINANET-BB]    中国 北京市   chinatelecom.com.cn  电信
+                                              153.11 ms / 153.95 ms / 153.07 ms
+9   101.4.117.109   AS4538   [BJR-CERNET]     中国 北京市   cernet.edu.cn  教育网
+                                              173.28 ms / 173.53 ms / 173.43 ms
+10  101.4.118.25    AS4538   [BJR-CERNET]     中国 北京市   cernet.edu.cn  教育网
+                                              174.62 ms / 174.01 ms / * ms
+11  101.4.113.234   AS4538   [BJR-CERNET]     中国 北京市   cernet.edu.cn  教育网
+                                              173.35 ms / 173.26 ms / 173.15 ms
+12  202.112.38.10   AS4538   [CERNET-CN]      中国 北京市   cernet.edu.cn  教育网
+                                              173.34 ms / 172.76 ms / 173.40 ms
+13  118.229.4.74    AS4538   [BJR-CERNET]     中国 北京市  海淀区 cernet.edu.cn  教育网
+                                              174.49 ms / 179.19 ms / 174.99 ms
+14  118.229.2.66    AS4538   [BJR-CERNET]     中国 北京市  海淀区 cernet.edu.cn  教育网
+                                              173.34 ms / 172.99 ms / 177.09 ms
+15  118.229.8.6     AS4538   [BJR-CERNET]     中国 北京市  海淀区 cernet.edu.cn  教育网
+                                              174.03 ms / 174.00 ms / 173.47 ms
+16  101.6.15.130    AS4538   [BJR-CERNET]     中国 北京市  海淀区 cernet.edu.cn  教育网
+                                              168.98 ms / 168.95 ms / 168.61 ms
+</code></pre><p>可以看出确实走的都是CN2-GIA线路，延迟也都在200ms以内比较稳定。</p>
+<p>搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+购买直达<a href="https://bwh81.net/aff.php?aff=42451&amp;pid=94" target="_blank">链接</a>
+</p>
+<h2 id="总结">
+  总结
+  <a class="heading-link" href="#%e6%80%bb%e7%bb%93">
+    <i class="fa fa-link" aria-hidden="true"></i>
+  </a>
+</h2>
+<p>总之这款产品的还是非常具有性价比的，适合建站以及个人自用，推荐大家购买。</p>
+<p>搬瓦工优惠码：BWHCCNCXVV（优惠力度 6.58%）
+购买直达<a href="https://bwh81.net/aff.php?aff=42451&amp;pid=94" target="_blank">链接</a>
+</p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+      </div>
+
+      
+  <footer class="footer">
+    <section class="container">
+      
+      
+        ©
+        
+          2022 -
+        
+        2023
+         James 
+      
+      
+         · 
+        Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+      
+      
+    </section>
+  </footer>
+
+
+    </main>
+
+    
+      
+      <script src="/js/coder.min.235666b114443867d43eeb5799d51f6252965e5163f338285e113fa381d3d27e.js" integrity="sha256-I1ZmsRREOGfUPutXmdUfYlKWXlFj8zgoXhE/o4HT0n4="></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+  </body>
+
+</html>

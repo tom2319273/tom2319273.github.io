@@ -1,0 +1,17 @@
+baseURL = "https://blog.123577.xyz"
+languageCode = "en-us"
+title = "james' blog"
+theme = "hugo-coder"
+
+[params]
+author = "James"
+description = "James's Blog"
+keywords = "blog,security research,vps"
+info = "记录Debug日常、思考和玩机"
+avatarURL = "images/avatar.jpg"
+since = 2022
+
+[[menu.main]]
+    name = "Blog"
+    weight = 1
+    url = "posts/"
